@@ -6,14 +6,14 @@
 
 ## Features
 
-- 🔗 parse url
-- 🤳 copy url param
+- 🔗 Parse url
+- 🤳 Copy url param
 
 ## TODO
 
-- [ ] edit url
-- [ ] theme 
+- [ ] Edit url
+- [ ] Theme switching
 
 ## Thanks
 
-- [vue](https://github.com/vuejs/vue)
+Template used [vitesse-webext](https://github.com/antfu/vitesse-webext.git).
