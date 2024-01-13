@@ -2,7 +2,7 @@
 
 <p align="center">🔗 A browser extension to parse and edit urls.</p>
 
-<img src="./assets/home.png">
+<img src="https://github.com/Elgar17/url-editor/blob/master/assets/home.png">
 
 ## Features
 
