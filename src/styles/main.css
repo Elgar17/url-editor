@@ -26,5 +26,5 @@ body,
 }
 
 .text-area {
-  @apply w-[100%] px-1 border mt-1 rounded focus:border-indigo-600 focus:outline-none focus:shadow-outline
+  @apply px-1 border mt-1 rounded focus:border-indigo-600 focus:outline-none focus:shadow-outline
 }

@@ -8,10 +8,14 @@
 
 - 🔗 Parse url
 - 🤳 Copy url param
+- 🎨 Edit url
 
 ## TODO
 
-- [ ] Edit url
+- [ ] add new url search
+- [ ] delete url search
+- [ ] add new url hashSearch
+- [ ] delete url hashSearch
 - [ ] Theme switching
 
 ## Thanks

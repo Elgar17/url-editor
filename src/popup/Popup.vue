@@ -4,11 +4,29 @@ import Copy from '~/components/icons/copy.vue'
 // TODO: add input
 // const inputUrl = ref<String>('')
 const url = ref<String>('')
-// 解析完成的URL
+// 解析完成的URL hashObj
 const urlObj = ref<any>({})
 
 const copyTokeyboard = (text: string) => {
   navigator.clipboard.writeText(text)
+}
+
+const parseHash = (hash: any) => {
+  if (!hash || typeof hash !== 'string')
+    return null
+  const hashPath = hash?.split?.('?')?.[0]
+  const hashParams = new URLSearchParams(hash?.split?.('?')?.[1] || '')
+  return {
+    hashSearch: Array.from(hashParams.entries()),
+    path: hashPath,
+  }
+}
+
+const parseSearch = (search: string): Array<any> => {
+  if (!search)
+    return []
+  const searchParams = new URLSearchParams(search.split('?')[1] || '')
+  return Array.from(searchParams.entries())
 }
 
 const parseURL = (urlStr: string) => {
@@ -18,8 +36,8 @@ const parseURL = (urlStr: string) => {
     protocol: url.protocol,
     host: url.host,
     pathname: url.pathname,
-    search: url.search,
-    hash: url.hash,
+    search: parseSearch(url.search),
+    hash: parseHash(url.hash),
     href: url.href,
     searchParams: url.searchParams,
   }
@@ -37,26 +55,22 @@ const getUrl = () => {
 
 getUrl()
 
-const parseSearch = (search: string): Array<any> => {
-  const searchParams = new URLSearchParams(search.split('?')[1] || '')
-  return Array.from(searchParams.entries())
-}
-
-const parseHash = (hash: string) => {
-  const hashPath = hash.split('?')[0]
-  const hashParams = new URLSearchParams(hash.split('?')[1] || '')
-  return {
-    hashSearch: Array.from(hashParams.entries()),
-    hash: hashPath,
-  }
-}
-
 const updateUrl = () => {
-  console.log('url')
+  // Join url Object
+  let urlStr = urlObj.value.protocol
+  urlStr += `//${urlObj.value.host}`
+  urlStr += urlObj.value.pathname
+  urlStr += urlObj.value.search?.length > 0 ? `?${urlObj.value.search?.map(([k, v]: string[]) => `${k}=${v}`).join('&')}` : ''
+  urlStr += urlObj.value?.hash?.path
+  urlStr += `?${urlObj.value?.hash?.hashSearch?.map(([k, v]: string[]) => `${k}=${v}`).join('&')}`
+
+  // Updata current tab url
+  const tabId = (document as any).getElementById('tabId')
+  browser.tabs.update(tabId, { url: urlStr })
 }
 
 const goToGithub = () => {
-  browser.tabs.create({ url: 'https://github.com/lx2009/url-editor' })
+  browser.tabs.create({ url: 'https://github.com/Elgar17/url-editor' })
 }
 </script>
 
@@ -81,49 +95,48 @@ const goToGithub = () => {
         <strong>Protocol: </strong>
         <div class="flex items-center">
           <Copy mt-1 mr-1 hover:text-gray-500 @click="copyTokeyboard(urlObj.protocol)" />
-          <textarea :value="urlObj.protocol" class="text-area" rows="1" />
+          <textarea v-model="urlObj.protocol" class="text-area w-[100%]" rows="1" />
         </div>
       </div>
       <div border-b py-1 px-2 hover="cursor-pointer bg-[#FAFAFA]">
         <strong>Host: </strong>
         <div class="flex items-center">
           <Copy mt-1 mr-1 hover:text-gray-500 @click="copyTokeyboard(urlObj.host)" />
-          <textarea :value=" urlObj.host" class="text-area" rows="1" />
+          <textarea v-model=" urlObj.host" class="text-area w-[100%]" rows="1" />
         </div>
       </div>
       <div border-b py-1 px-2 hover="cursor-pointer bg-[#FAFAFA]">
         <strong>Path: </strong>
         <div class="flex items-center">
           <Copy mt-1 mr-1 hover:text-gray-500 @click="copyTokeyboard(urlObj.pathname)" />
-          <textarea :value=" urlObj.pathname" class="text-area" rows="1" />
-        </div>
-      </div>
-      <div v-if="urlObj.search" border-b py-1 px-2>
-        <strong>Search: </strong>
-        <div v-for="item in parseSearch(urlObj.search)" :key="item[0]" class="flex items-center">
-          <Copy mt-1 hover:text-gray-500 @click="copyTokeyboard(item[1])" />
-          <div mx-2 text mt-1 class="w-[50px]">
-            {{ item[0] }}
-          </div>
-          <textarea :value="item[1]" class="text-area" rows="1" />
+          <textarea v-model="urlObj.pathname" class="text-area w-[100%]" rows="1" />
         </div>
       </div>
 
+      <!-- Search -->
+      <div v-if="urlObj.search" border-b py-1 px-2>
+        <strong>Search: </strong>
+        <div v-for="item in urlObj.search" :key="item[0]" class="flex items-center">
+          <Copy mt-1 hover:text-gray-500 @click="copyTokeyboard(item[1])" />
+          <textarea v-model="item[0]" class="text-area mx-2 text mt-1" rows="1" />
+          <textarea v-model="item[1]" class="text-area w-[100%]" rows="1" />
+        </div>
+      </div>
+
+      <!-- HASH -->
       <div v-if="urlObj.hash" border-b py-1 px-2>
         <strong>Hash: </strong>
         <div class="flex items-center">
-          <Copy mt-1 hover:text-gray-500 @click="copyTokeyboard(parseHash(urlObj.hash).hash)" />
-          <div mx-2 text mt-1 class="w-[50px]">
+          <Copy mt-1 hover:text-gray-500 @click="copyTokeyboard(urlObj.hash.path)" />
+          <div mx-2 text mt-1 class="min-w-[50px]">
             hash
           </div>
-          <textarea :value="parseHash(urlObj.hash).hash" class="text-area" rows="1" />
+          <textarea v-model="urlObj.hash.path" class="text-area w-[100%]" rows="1" />
         </div>
-        <div v-for="item in parseHash(urlObj.hash).hashSearch" :key="item[0]" class="flex items-center">
+        <div v-for="item in urlObj.hash.hashSearch" :key="item[0]" class="flex items-center">
           <Copy mt-1 hover:text-gray-500 @click="copyTokeyboard(item[1])" />
-          <div mx-2 text mt-1 class="flex-1 min-w-[50px]">
-            {{ item[0] }}
-          </div>
-          <textarea :value="item[1]" class="text-area" rows="1" />
+          <textarea v-model="item[0]" class="text-area mx-2 text mt-1" rows="1" />
+          <textarea v-model="item[1]" class="flex-1 text-area w-[100%]" rows="1" />
         </div>
       </div>
     </div>
