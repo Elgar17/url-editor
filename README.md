@@ -10,6 +10,12 @@
 - 🤳 Copy url param
 - 🎨 Edit url
 
+## Download
+
+download and unzip the file, then drag it into the browser extension page.
+
+- [url-editor-0.0.1.zip](https://github.com/Elgar17/url-editor/files/13998109/url-editor-0.0.1.zip)
+
 ## TODO
 
 - [ ] add new url search
